@@ -6,7 +6,9 @@ TAGS = {
     "selectlanguage{}"  => "",
     "inputencoding{}"  => "",
     "textbf{}" => '<strong>\1</strong>',
-    ["beginL", "endL"] => '\1'
+    "href{}{}" => '<a href="\1">\2</a>',
+    ["beginL", "endL"] => '\1',
+    "L{}" => '\1'
 }
 class String
     def basic_replacements
