@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
-BASIC_REPLACEMENTS = {'\char`\"{}' => '"'}
+BASIC_REPLACEMENTS = {
+    '\char`\"{}' => '"',
+    /\\char34\s?({})?/ => '"'
+}
 TAGS = {
     "title{}" => "",
     "maketitle"  => "",
@@ -32,6 +35,10 @@ class String
     def remove_comments
         gsub(/%.*/, "")
     end
+    def remove_linebreaks
+        #tex has linebreaks in the middle of paragraphs for no reason
+        gsub(/(?<!\n)\n(?!\n)/, " ")
+    end
     def math_tag_replacements #relies on the fact that LyX converts math to \L{$...$} in my heb posts        
         gsub(/\\L\{\$([^\$]*)\$\}/,'\(\1\)')
     end
@@ -47,6 +54,7 @@ File.open("#{filename}.blog", "w") do |f|
     f.write text.
     basic_replacements.
     parentheses_fix.
+    remove_linebreaks.
     math_tag_replacements.
     remove_comments.
     replace_tags.
