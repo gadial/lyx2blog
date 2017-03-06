@@ -10,7 +10,9 @@ TAGS = {
     "inputencoding{}"  => "",
     "textbf{}" => '<strong>\1</strong>',
     "href{}{}" => '<a href="\1">\2</a>',
-    ["beginL", "endL"] => '\1',
+    ['\{\\\\beginL', '\\\\endL\}'] => '\1',
+    ['\\\\begin\{itemize\}', '\\\\end\{itemize\}'] => '<ul>\1</ul>',
+    ['\\\\item', "\n"] => '<li>\1</li>',
     "L{}" => '\1'
 }
 class String
@@ -24,8 +26,8 @@ class String
     
     def replace_tag(tag_data)
         tag, replacement = tag_data
-        tag_regexp = /\\#{tag.gsub('{}', '\{(.*?)\}')}/ if String === tag
-        tag_regexp = /\{\\#{tag.first} (.*?)\\#{tag.last}\}/ if Array === tag
+        tag_regexp = /\\#{tag.gsub('{}', '\{(.*?)\}')}/m if String === tag
+        tag_regexp = /#{tag.first}\s(.*?)#{tag.last}/m if Array === tag
         gsub tag_regexp, replacement
     end
     
@@ -54,9 +56,9 @@ File.open("#{filename}.blog", "w") do |f|
     f.write text.
     basic_replacements.
     parentheses_fix.
-    remove_linebreaks.
     math_tag_replacements.
     remove_comments.
     replace_tags.
+    remove_linebreaks.
     force_encoding("utf-8")
 end                                  
