@@ -1,10 +1,11 @@
+#!/usr/bin/env ruby
 BASIC_REPLACEMENTS = {'\char`\"{}' => '"'}
 TAGS = {
-    "title" => "",
-    :maketitle  => "",
-    "selectlanguage"  => "",
-    "inputencoding"  => "",
-    "textbf" => '<strong>\1</strong>',
+    "title{}" => "",
+    "maketitle"  => "",
+    "selectlanguage{}"  => "",
+    "inputencoding{}"  => "",
+    "textbf{}" => '<strong>\1</strong>',
     ["beginL", "endL"] => '\1'
 }
 class String
@@ -18,8 +19,7 @@ class String
     
     def replace_tag(tag_data)
         tag, replacement = tag_data
-        tag_regexp = /\\#{tag}/ if Symbol === tag #I cheat and use symbol instead of string to indicate parmeter-less TeX command
-        tag_regexp = /\\#{tag}\{(.*?)\}/ if String === tag
+        tag_regexp = /\\#{tag.gsub('{}', '\{(.*?)\}')}/ if String === tag
         tag_regexp = /\{\\#{tag.first} (.*?)\\#{tag.last}\}/ if Array === tag
         gsub tag_regexp, replacement
     end
