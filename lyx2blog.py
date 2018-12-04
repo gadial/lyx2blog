@@ -13,16 +13,17 @@ TAGS = {
     "maketitle" : "",
     "selectlanguage{}" : "",
     "inputencoding{}" : "",
-    "textbf{}": '<strong>\1</strong>',
-    "href{}{}": '<a href="\1">\2</a>',
-    ("section{}", "section*{}"): '<h2>\1</h2>',
-    ('\{\\\\beginL', '\\\\endL\}'): '\1',
-    ('\\\\item', "(?=\n\\\\item)"): '<li>\1</li>',
-    ('\\\\item', "(?=\n\\\\end\{)"): '<li>\1</li>',
-    ('\\\\begin\{itemize\}', '\\\\end\{itemize\}'): '<ul>\1</ul>',
-    ('\\\\begin\{enumerate\}', '\\\\end\{enumerate\}'): '<ol>\1</ol>',
-    ('\\\\begin\{quote\}', '\\\\end\{quote\}'): '<blockquote>\1</blockquote>',
-    "L{}": '\1',
+    "textbf{}": r'<strong>\1</strong>',
+    "href{}{}": r'<a href="\1">\2</a>',
+    "section{}": r'<h2>\1</h2>',
+    "section*{}": r'<h2>\1</h2>',
+    (r'\{\\beginL', r'\\endL\}'): r'\1',
+    (r'\\item', r'(?=\n\\item)'): r'<li>\1</li>',
+    (r'\\item', r'(?=\n\\end\{)'): r'<li>\1</li>',
+    (r'\\begin{itemize}', r'\\end{itemize}'): r'<ul>\1</ul>',
+    (r'\\begin\{enumerate\}', r'\\end\{enumerate\}'): r'<ol>\1</ol>',
+    (r'\\begin\{quote\}', r'\\end\{quote\}'): r'<blockquote>\1</blockquote>',
+    "L{}": r'\1',
     'textquotedblright': '"',
     'textquotedblleft ': '"',
     'textquotedblleft{}': '"',
@@ -52,7 +53,7 @@ def find_problems(text):
 
 def basic_replacements(text):
     for (target, result) in BASIC_REPLACEMENTS.items():
-        text = re.sub(target, result, text)
+        text = re.sub(target, result, text, re.DOTALL)
     return text
 
 def parentheses_fix(text):  # relies on the fact that parentheses in mathmode are of the form \left( and \right)
@@ -60,15 +61,27 @@ def parentheses_fix(text):  # relies on the fact that parentheses in mathmode ar
     return re.sub(r'(?<!\\left)\(|(?<!\\right)\)', lambda s: replacement.get(s.group(0), s.group(0)), text)
 
 def math_tag_replacements(text):  # relies on the fact that LyX converts math to \L{$...$} in my heb posts
-    return re.sub(r'\\L\{\$([^\$]*)\$\}', lambda s: "\({}\)".format(s.group(1)), text)
+    return re.sub(r'\\L\{\$([^\$]*)\$\}', r'\(\1\)', text)
+
+def remove_comments(text):
+    return re.sub(r'%.*', "", text)
+
+def replace_tags(text):
+    for tag, replacement in TAGS.items():
+        if isinstance(tag, str):
+            regex = r'\\' + re.sub(r'{}', r'\\{(.*?)\\}', tag)
+        if isinstance(tag, tuple):
+            regex = r'{}\s(.*?){}'.format(tag[0], tag[1])
+        text = re.sub(regex, replacement, text, flags = re.DOTALL)
+    return text
 
 def peform_all_changes(text):
     text = get_content(text)
     text = find_problems(text)
     text = parentheses_fix(text)
     text = math_tag_replacements(text)
-    # remove_comments.
-    # replace_tags.
+    text = remove_comments(text)
+    text = replace_tags(text)
     # remove_linebreaks.
     # force_encoding("utf-8")
     return text
