@@ -71,3 +71,43 @@ class TestLyx2Blog(unittest.TestCase):
         expected_result = '<ul><li>ITEM 1</li>\n<li>ITEM 2</li>\n</ul>'
         text = lyx2blog.replace_tags(text)
         self.assertEqual(expected_result, text)
+
+        text = "\\begin{enumerate}\n\\item ITEM 1\n\\item ITEM 2\n\\end{enumerate}"
+        expected_result = '<ol><li>ITEM 1</li>\n<li>ITEM 2</li>\n</ol>'
+        text = lyx2blog.replace_tags(text)
+        self.assertEqual(expected_result, text)
+
+        text = r'\textquotedblright Hello world\textquotedblleft '
+        expected_result = r'"Hello world"'
+        text = lyx2blog.replace_tags(text)
+        self.assertEqual(expected_result, text)
+
+        text = "\\begin{itemize}\n\\item ITEM 1\n\\end{itemize}\n\\begin{enumerate}\n\\item ITEM 2\n\\end{enumerate}"
+        expected_result = "<ul><li>ITEM 1</li>\n</ul>\n<ol><li>ITEM 2</li>\n</ol>"
+        text = lyx2blog.replace_tags(text)
+        self.assertEqual(expected_result, text)
+
+        text = "One approach is called \\textquotedblright\\textbf{Trapped Ions}\\textquotedblleft{} - the idea is"
+        expected_result = "One approach is called \"<strong>Trapped Ions</strong>\" - the idea is"
+        text = lyx2blog.replace_tags(text)
+        self.assertEqual(expected_result, text)
+
+    def test_remove_linebreaks(self):
+        text = "Hello\r\nworld"
+        expected_text = "Hello world"
+        text = lyx2blog.remove_linebreaks(text)
+        self.assertEqual(expected_text, text)
+
+
+text = "One approach is called \\textquotedblright\\textbf{Trapped Ions}\\textquotedblleft{} - the idea is"
+expected_result = "One approach is called \"<strong>Trapped Ions</strong>\" - the idea is"
+print(text)
+print("********")
+print(expected_result)
+print("********")
+new_text = lyx2blog.replace_tags(text)
+print(new_text)
+exit()
+
+if __name__ == '__main__':
+    unittest.main()
