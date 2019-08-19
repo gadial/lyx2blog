@@ -17,6 +17,8 @@ TAGS = {
     "href{}{}": r'<a href="\1">\2</a>',
     "section{}": r'<h2>\1</h2>',
     "section*{}": r'<h2>\1</h2>',
+    "subsection{}": r'<h3>\1</h3>',
+    "subsection*{}": r'<h3>\1</h3>',
     (r'\{\\beginL', r'\\endL\}'): r'\1',
     (r'\\item', r'(?=(?=\n\\item)|(?=\n\\end\{))'): r'<li>\1</li>',
     (r'\\begin{itemize}', r'\\end{itemize}'): r'<ul>\1</ul>',
@@ -84,6 +86,10 @@ def remove_linebreaks(text):
     text = re.sub(r'(?<!\n)\n(?!\n)', " ", text)
     return text
 
+def add_paragraph_tags(text):
+    text = re.sub(r'\n(\S.*)', r'\n<p>\1</p>', text)
+    return text
+
 def peform_all_changes(text):
     text = get_content(text)
     text = find_problems(text)
@@ -92,6 +98,7 @@ def peform_all_changes(text):
     text = remove_comments(text)
     text = replace_tags(text)
     text = remove_linebreaks(text)
+    text = add_paragraph_tags(text)
     return text
 
 if __name__ == '__main__':
@@ -103,5 +110,5 @@ if __name__ == '__main__':
     with open(filename + ".tex") as texfile:
         text = texfile.read()
     text = peform_all_changes(text)
-    with open(filename + ".blog", "w") as blogfile:
-        blogfile.write(text)
+    with open(filename + ".blog", "w") as output_file:
+        output_file.write(text)
