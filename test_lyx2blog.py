@@ -99,15 +99,15 @@ class TestLyx2Blog(unittest.TestCase):
         self.assertEqual(expected_text, text)
 
 
-text = "One approach is called \\textquotedblright\\textbf{Trapped Ions}\\textquotedblleft{} - the idea is"
-expected_result = "One approach is called \"<strong>Trapped Ions</strong>\" - the idea is"
-print(text)
-print("********")
-print(expected_result)
-print("********")
-new_text = lyx2blog.replace_tags(text)
-print(new_text)
-exit()
+# text = "One approach is called \\textquotedblright\\textbf{Trapped Ions}\\textquotedblleft{} - the idea is"
+# expected_result = "One approach is called \"<strong>Trapped Ions</strong>\" - the idea is"
+# print(text)
+# print("********")
+# print(expected_result)
+# print("********")
+# new_text = lyx2blog.replace_tags(text)
+# print(new_text)
+# exit()
 
 if __name__ == '__main__':
     unittest.main()

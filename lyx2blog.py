@@ -24,6 +24,7 @@ TAGS = {
     (r'\\begin{quote}', r'\\end{quote}'): r'<blockquote>\1</blockquote>',
     "L{}": r'\1',
     'textquotedblright ': '"',
+    'textquotedblright': '"',
     'textquotedblleft ': '"',
     'textquotedblleft{}': '"',
     'textquotedbl ' : '"',
