@@ -92,6 +92,11 @@ class TestLyx2Blog(unittest.TestCase):
         text = lyx2blog.replace_tags(text)
         self.assertEqual(expected_result, text)
 
+        text = "\paragraph*{solution:}"
+        expected_result = "<h4>solution:</h4>"
+        text = lyx2blog.replace_tags(text)
+        self.assertEqual(expected_result, text)
+
     def test_remove_linebreaks(self):
         text = "Hello\r\nworld"
         expected_text = "Hello world"
