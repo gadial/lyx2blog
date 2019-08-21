@@ -97,16 +97,26 @@ class TestLyx2Blog(unittest.TestCase):
         text = lyx2blog.replace_tags(text)
         self.assertEqual(expected_result, text)
 
+        text = '\paragraph*{targil {\\beginL 5\endL}:}'
+        expected_result = "<h4>targil 5:</h4>"
+        text = lyx2blog.replace_tags(text)
+        self.assertEqual(expected_result, text)
+
     def test_remove_linebreaks(self):
         text = "Hello\r\nworld"
         expected_text = "Hello world"
         text = lyx2blog.remove_linebreaks(text)
         self.assertEqual(expected_text, text)
 
+    def test_remove_L_tag(self):
+        text = "\L{\[a_{1}+a_{2}+a_{3}+a_{4}=3\cdot21=87\]}"
+        expected_result = "\[a_{1}+a_{2}+a_{3}+a_{4}=3\cdot21=87\]"
+        text = lyx2blog.remove_L_tag(text)
+        self.assertEqual(expected_result, text)
 
-# text = "One approach is called \\textquotedblright\\textbf{Trapped Ions}\\textquotedblleft{} - the idea is"
-# expected_result = "One approach is called \"<strong>Trapped Ions</strong>\" - the idea is"
-# print(text)
+
+# text = '\paragraph*{targil {\\beginL 5\endL}:}'
+# expected_result = "<h4>targil 5</h4>"
 # print("********")
 # print(expected_result)
 # print("********")

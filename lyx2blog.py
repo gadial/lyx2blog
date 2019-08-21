@@ -13,18 +13,19 @@ TAGS = {
     "maketitle" : "",
     "selectlanguage{}" : "",
     "inputencoding{}" : "",
+    "newpage": "",
     "textbf{}": r'<strong>\1</strong>',
     "href{}{}": r'<a href="\1">\2</a>',
-    "section{}": r'<h2>\1</h2>',
-    "section\*{}": r'<h2>\1</h2>',
-    "subsection{}": r'<h3>\1</h3>',
-    "subsection\*{}": r'<h3>\1</h3>',
-    "paragraph\*{}": r'<h4>\1</h4>',
     (r'\{\\beginL', r'\\endL\}'): r'\1',
     (r'\\item', r'(?=(?=\n\\item)|(?=\n\\end\{))'): r'<li>\1</li>',
     (r'\\begin{itemize}', r'\\end{itemize}'): r'<ul>\1</ul>',
     (r'\\begin{enumerate}', r'\\end{enumerate}'): r'<ol>\1</ol>',
     (r'\\begin{quote}', r'\\end{quote}'): r'<blockquote>\1</blockquote>',
+    "section{}": r'<h2>\1</h2>',
+    "section\*{}": r'<h2>\1</h2>',
+    "subsection{}": r'<h3>\1</h3>',
+    "subsection\*{}": r'<h3>\1</h3>',
+    "paragraph\*{}": r'<h4>\1</h4>',
     "L{}": r'\1',
     'textquotedblright ': '"',
     'textquotedblright': '"',
@@ -91,12 +92,28 @@ def add_paragraph_tags(text):
     text = re.sub(r'\n(\S.*)', r'\n<p>\1</p>', text)
     return text
 
+def remove_L_tag(text):
+    idx = text.find("\L{")
+    while idx != -1:
+        count = 1
+        text = text[:idx] + text[idx+3:]
+        while count > 0:
+            idx += 1
+            if text[idx] == '{':
+                count +=1
+            if text[idx] == '}':
+                count -=1
+        text = text[:idx] + text[idx+1:]
+        idx = text.find("\L{")
+    return text
+
 def peform_all_changes(text):
     text = get_content(text)
     text = find_problems(text)
     text = parentheses_fix(text)
     text = math_tag_replacements(text)
     text = remove_comments(text)
+    text = remove_L_tag(text)
     text = replace_tags(text)
     text = remove_linebreaks(text)
     text = add_paragraph_tags(text)
